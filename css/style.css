@@ -7,18 +7,6 @@
   background-color: black;
 }
 
-.bg-darkblue {
-  background-color: #12232e;
-}
-
-.bg-lightblue {
-  background-color: #007cc7;
-}
-
-.bg-lightblue-light {
-  background-color: #FFD6C;
-}
-
 #main-header .port-item {
   width: 30%;
 }
