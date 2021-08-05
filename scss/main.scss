@@ -1,0 +1,44 @@
+/* Dark Blue: #12232E
+Lighter Blue: #007CC7
+Lightest Blue: #4DA8DA
+Shadow of Dark Blue: #203647
+Shadow of Light Blue: #EEFBFB
+*/
+
+/*
+Blackish: #202020
+Dark Grey: #3F3F3F
+Medium Grey: #707070
+Egg Yellow: #FFDF6C
+White: #FFFFFF
+*/
+
+// Custom.scss
+// Option A: Include all of Bootstrap
+
+$primary: #2b658a;
+$secondary: #007cc7;
+$warning: #4da8da;
+
+@import 'bootstrap/scss/bootstrap';
+@import './wave';
+@import './timeline';
+
+.skill-box {
+  position: relative;
+  padding: 20px 30px;
+  margin: 40px 10px;
+  transition: ease-in-out 0.3s;
+  box-shadow: 0 2px $primary;
+  //   border-bottom: 1px dotted $primary;
+  //   border-radius: 20% 0%;
+  max-width: 300px;
+}
+
+.skill-icon {
+  position: absolute;
+  top: -35px;
+  left: -35px;
+  opacity: 0.6;
+  color: $primary;
+}
