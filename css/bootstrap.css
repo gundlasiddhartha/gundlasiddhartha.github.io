@@ -6276,7 +6276,7 @@ body {
   padding: 20px 30px;
   margin: 40px 40px;
   transition: ease-in-out 0.3s;
-  box-shadow: 0 2px 10px #2b668ac5;
+  box-shadow: 0 2px 1px #2b668ac5;
   max-width: 250px; }
 
 .skill-icon {
@@ -6285,3 +6285,8 @@ body {
   left: -35px;
   opacity: 0.6;
   color: #2b668ac5; }
+
+#main-header {
+  background-image: url(../img/background.jpg);
+  background-size: cover;
+  background-position: center; }
