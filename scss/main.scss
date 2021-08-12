@@ -39,7 +39,7 @@ body {
   box-sizing: inherit;
   font-family: 'Poppins', sans-serif;
   font-weight: 600;
-  background-color: f1f1f1;
+  background-color: rgb(216, 216, 216);
 }
 
 .skill-box {
@@ -65,6 +65,12 @@ body {
   background-image: url(../img/background.jpg);
   background-size: cover;
   background-position: center;
+}
+
+.content {
+  background-image: url(../img/circuit.png);
+  background-repeat: no-repeat;
+  background-position: right;
 }
 
 // .clip-bacground {

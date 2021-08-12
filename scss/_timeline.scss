@@ -2,7 +2,7 @@
 –––––––––––––––––––––––––––––––––––––––––––––––––– */
 
 .timeline ul {
-  background: #fff;
+  background: rgb(216, 216, 216);
   padding: 50px 0;
 }
 
@@ -23,7 +23,7 @@
   border-radius: 50px;
   left: -5px;
   top: 0;
-  background: #fff;
+  background: rgb(216, 216, 216);
   border: 2px solid #1f5297;
   z-index: 1;
 }
@@ -32,8 +32,9 @@
   position: relative;
   bottom: 0;
   width: 400px;
-  padding: 15px;
+  padding: 25px;
   background: $primary;
+  border-radius: 10px;
 }
 
 .timeline ul li div::before {
