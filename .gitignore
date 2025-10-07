@@ -1,2 +1,5 @@
 node_modules/
 bootstrap/
+dist/
+.DS_Store
+*.log
