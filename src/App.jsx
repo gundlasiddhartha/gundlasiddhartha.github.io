@@ -13,7 +13,7 @@ function App() {
 
   return (
     <div className="container">
-      <Header activeSection={activeSection} setActiveSection={setActiveSection} />
+      <Header setActiveSection={setActiveSection} />
       <div className="content">
         <Home isActive={activeSection === 'home'} />
         <Resume isActive={activeSection === 'resume'} />

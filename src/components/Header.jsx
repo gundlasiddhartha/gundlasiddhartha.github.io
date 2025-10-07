@@ -1,4 +1,4 @@
-const Header = ({ activeSection, setActiveSection }) => {
+const Header = ({ setActiveSection }) => {
   const handleNavClick = (section) => {
     setActiveSection(section);
   };
