@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import SectionWave from './components/SectionWave.jsx';
 import Timeline from './components/Timeline.jsx';
 import FollowMe from './components/FollowMe.jsx';
+import { getPortfolio, submitContactForm } from './services/api.js';
 
 const navItems = [
   { id: 'home', label: 'Home', icon: 'fas fa-home' },
@@ -97,8 +98,6 @@ const fallbackPortfolio = {
   ]
 };
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8080';
-
 const App = () => {
   const [activeSection, setActiveSection] = useState('home');
   const [portfolio, setPortfolio] = useState(fallbackPortfolio);
@@ -122,15 +121,7 @@ const App = () => {
 
     const fetchPortfolio = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/api/portfolio`, {
-          signal: controller.signal
-        });
-
-        if (!response.ok) {
-          throw new Error(`Request failed with status ${response.status}`);
-        }
-
-        const data = await response.json();
+        const data = await getPortfolio(controller.signal);
         setPortfolio({ ...fallbackPortfolio, ...data });
         setLoadError(null);
       } catch (error) {
@@ -218,19 +209,7 @@ const App = () => {
     setFormStatus({ submitting: true, success: null, error: null });
 
     try {
-      const response = await fetch(`${API_BASE_URL}/api/contact`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(formData)
-      });
-
-      if (!response.ok) {
-        throw new Error(`Request failed with status ${response.status}`);
-      }
-
-      const result = await response.json();
+      const result = await submitContactForm(formData);
       setFormStatus({ submitting: false, success: result.message ?? 'Message sent successfully!', error: null });
       setFormData({ name: '', email: '', message: '' });
     } catch (error) {
