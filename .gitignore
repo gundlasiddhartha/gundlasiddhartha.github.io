@@ -1,2 +1,12 @@
-node_modules/
-bootstrap/
+# Node
+client/node_modules/
+client/dist/
+client/.env.local
+client/.env
+
+# Dotnet
+api/bin/
+api/obj/
+
+# OS
+.DS_Store
