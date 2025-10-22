@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import SectionWave from './components/SectionWave.jsx';
 import Timeline from './components/Timeline.jsx';
+import FollowMe from './components/FollowMe.jsx';
 
 const navItems = [
   { id: 'home', label: 'Home', icon: 'fas fa-home' },
@@ -105,6 +106,16 @@ const App = () => {
   const [loadError, setLoadError] = useState(null);
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
   const [formStatus, setFormStatus] = useState({ submitting: false, success: null, error: null });
+  const [showBackToTop, setShowBackToTop] = useState(false);
+  const [isNavOpen, setIsNavOpen] = useState(false);
+
+  const groupedSkills = useMemo(() => {
+    const columns = [[], [], []];
+    portfolio.skills.forEach((skill, index) => {
+      columns[index % columns.length].push(skill);
+    });
+    return columns;
+  }, [portfolio.skills]);
 
   useEffect(() => {
     const controller = new AbortController();
@@ -140,13 +151,67 @@ const App = () => {
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }, [activeSection]);
 
-  const groupedSkills = useMemo(() => {
-    const columns = [[], [], []];
-    portfolio.skills.forEach((skill, index) => {
-      columns[index % columns.length].push(skill);
+  // Global scroll progress and back-to-top toggle
+  useEffect(() => {
+    const updateScrollProgress = () => {
+      const scrollTop = window.scrollY || document.documentElement.scrollTop;
+      const docHeight = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight) - window.innerHeight;
+      const progress = docHeight > 0 ? Math.min(100, Math.max(0, (scrollTop / docHeight) * 100)) : 0;
+      const bar = document.getElementById('scroll-progress');
+      if (bar) {
+        bar.style.width = `${progress}%`;
+      }
+      // Reveal-on-scroll
+      document.querySelectorAll('.reveal').forEach((el) => {
+        const rect = el.getBoundingClientRect();
+        if (rect.top < window.innerHeight * 0.85) {
+          el.classList.add('reveal-in');
+        }
+      });
+      setShowBackToTop(scrollTop > 300);
+    };
+
+    updateScrollProgress();
+    window.addEventListener('scroll', updateScrollProgress, { passive: true });
+    window.addEventListener('resize', updateScrollProgress);
+    return () => {
+      window.removeEventListener('scroll', updateScrollProgress);
+      window.removeEventListener('resize', updateScrollProgress);
+    };
+  }, []);
+
+  // Subtle tilt on skill cards
+  useEffect(() => {
+    const cards = document.querySelectorAll('.skill-box');
+    if (!cards || cards.length === 0) return undefined;
+
+    const handleMove = (event) => {
+      const element = event.currentTarget;
+      const rect = element.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      const rotateY = ((x / rect.width) - 0.5) * 10;
+      const rotateX = -((y / rect.height) - 0.5) * 10;
+      element.style.transform = `perspective(700px) rotateX(${rotateX.toFixed(2)}deg) rotateY(${rotateY.toFixed(2)}deg) translateY(-6px)`;
+    };
+
+    const handleLeave = (event) => {
+      const element = event.currentTarget;
+      element.style.transform = '';
+    };
+
+    cards.forEach((card) => {
+      card.addEventListener('mousemove', handleMove);
+      card.addEventListener('mouseleave', handleLeave);
     });
-    return columns;
-  }, [portfolio.skills]);
+
+    return () => {
+      cards.forEach((card) => {
+        card.removeEventListener('mousemove', handleMove);
+        card.removeEventListener('mouseleave', handleLeave);
+      });
+    };
+  }, [groupedSkills]);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
@@ -179,52 +244,54 @@ const App = () => {
   };
 
   return (
-    <div className="container">
+    <div className="app-root container-fluid p-0">
+      <div id="scroll-progress" />
+      <FollowMe />
       <header id="main-header">
-        <div className="row no-gutters align-items-end bg-primary">
-          <div className="col-lg-4 col-md-5 p-5 d-none d-lg-block">
-            <img src="/img/person1.png" className="rounded rounded-circle" alt="Portrait of Siddhartha Gundla" />
+        <div className="top-nav px-3 py-2">
+          <div className="d-flex align-items-center gap-2">
+            <span className="brand-badge">S</span>
+            <span className="brand-name d-none d-sm-inline">Siddhartha</span>
           </div>
-          <div className="col">
-            <div className="d-flex flex-column">
-              <div className="p-5 text-white">
-                <div className="d-flex flex-row justify-content-between align-items-center">
-                  <div>
-                    <h1 className="display-4">{portfolio.profile.name}</h1>
-                    <p className="h3">{portfolio.profile.role}</p>
-                    <hr className="bg-white" />
-                  </div>
-                </div>
-              </div>
-              <nav>
-                <div className="d-flex flex-row text-white text-center align-items-stretch">
-                  {navItems.map((item) => (
-                    <button
-                      key={item.id}
-                      type="button"
-                      className={`port-item p-4 flex-fill ${activeSection === item.id ? 'active' : ''}`}
-                      onClick={() => setActiveSection(item.id)}
-                    >
-                      <i className={`${item.icon} fa-2x d-block`} />
-                      <span className="d-none d-sm-block">{item.label}</span>
-                    </button>
-                  ))}
-                </div>
-              </nav>
-            </div>
-          </div>
+          <button
+            type="button"
+            className="btn btn-outline-light btn-sm d-lg-none"
+            aria-expanded={isNavOpen}
+            aria-controls="primary-nav"
+            aria-label="Toggle navigation"
+            onClick={() => setIsNavOpen((v) => !v)}
+          >
+            <i className={`fas ${isNavOpen ? 'fa-times' : 'fa-bars'}`} />
+          </button>
+          <ul id="primary-nav" className={`nav-links-min ${isNavOpen ? 'open' : ''}`}>
+            {navItems.map((item) => (
+              <li key={item.id}>
+                <button
+                  type="button"
+                  className={`nav-link-min ${activeSection === item.id ? 'active' : ''}`}
+                  onClick={() => { setActiveSection(item.id); setIsNavOpen(false); }}
+                >
+                  {item.label}
+                </button>
+              </li>
+            ))}
+          </ul>
+          <a className="download-btn d-none d-md-inline-flex" href="#" aria-label="Download CV">
+            Download CV
+            <i className="fas fa-download ms-2" />
+          </a>
         </div>
       </header>
 
       <main className="content">
         {activeSection === 'home' && (
           <section>
-            <div className="p-5 bg-primary text-white py-5">
+            <div className="p-5 bg-primary text-white py-5 reveal">
               <h2>{portfolio.introduction.title}</h2>
               <p className="lead">{portfolio.introduction.description}</p>
             </div>
             <SectionWave />
-            <div className="container py-5">
+            <div className="container-fluid px-4 py-5 reveal">
               <h3>My Skills</h3>
               {isLoading && <p className="text-muted">Loading the latest data...</p>}
               {loadError && <p className="text-warning">{loadError}</p>}
@@ -249,12 +316,12 @@ const App = () => {
 
         {activeSection === 'resume' && (
           <section className="resume">
-            <div className="p-5 bg-primary text-white">
+            <div className="p-5 bg-primary text-white reveal">
               <h2>{portfolio.summary.headline}</h2>
               <p className="lead">{portfolio.summary.summaryText}</p>
             </div>
             <SectionWave />
-            <div className="row px-4 py-5">
+            <div className="row px-4 py-5 reveal">
               <div className="col-lg-6">
                 <h3 className="resume-title">Summary</h3>
                 <div className="resume-item pb-0">
@@ -302,23 +369,25 @@ const App = () => {
 
         {activeSection === 'work' && (
           <section>
-            <div className="p-5 bg-primary text-white py-5">
+            <div className="p-5 bg-primary text-white py-5 reveal">
               <h2>My Work</h2>
               <p className="lead">A quick overview of my professional journey.</p>
             </div>
             <SectionWave />
-            <Timeline items={portfolio.timeline} />
+            <div className="reveal">
+              <Timeline items={portfolio.timeline} />
+            </div>
           </section>
         )}
 
         {activeSection === 'contact' && (
           <section>
-            <div className="p-5 bg-primary text-white">
+            <div className="p-5 bg-primary text-white reveal">
               <h2>Contact</h2>
               <p className="lead">Let&apos;s build something great together.</p>
             </div>
             <SectionWave />
-            <div className="px-4 py-5">
+            <div className="px-4 py-5 reveal">
               <h3>Get in touch</h3>
               <form className="mt-4" onSubmit={handleSubmit}>
                 <div className="row g-3">
@@ -399,6 +468,17 @@ const App = () => {
       <footer id="main-footer" className="p-5 bg-primary text-center lead text-white">
         &copy; {new Date().getFullYear()} Siddhartha Gundla. All rights reserved.
       </footer>
+      {showBackToTop && (
+        <button
+          type="button"
+          className="btn btn-primary position-fixed"
+          style={{ right: '20px', bottom: '20px', zIndex: 999 }}
+          onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+          aria-label="Back to top"
+        >
+          <i className="fas fa-arrow-up" />
+        </button>
+      )}
     </div>
   );
 };
