@@ -44,6 +44,5 @@ if (app.Environment.IsDevelopment())
 app.MapDefaultEndpoints();
 
 app.MapControllers();
-app.MapGet("/healthz", () => Results.Ok(new { status = "Healthy" }));
 
 app.Run();
