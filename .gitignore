@@ -7,6 +7,10 @@ client/.env
 # Dotnet
 api/bin/
 api/obj/
+Portfolio.ServiceDefaults/bin/
+Portfolio.ServiceDefaults/obj/
+Portfolio.AppHost/bin/
+Portfolio.AppHost/obj/
 
 # OS
 .DS_Store
