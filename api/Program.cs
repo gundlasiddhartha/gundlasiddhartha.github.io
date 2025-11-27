@@ -2,7 +2,10 @@ using Portfolio.Api.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
-var corsOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? Array.Empty<string>();
+// Add Aspire service defaults (OpenTelemetry, health checks, resilience, service discovery)
+builder.AddServiceDefaults();
+
+var corsOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>() ?? [];
 
 builder.Services.AddCors(options =>
 {
@@ -37,7 +40,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
+// Map Aspire default endpoints (health, alive)
+app.MapDefaultEndpoints();
+
 app.MapControllers();
-app.MapGet("/healthz", () => Results.Ok(new { status = "Healthy" }));
 
 app.Run();
